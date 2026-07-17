@@ -1,4 +1,5 @@
 // core modules
+require("dotenv").config();
 const path = require("path");
 
 // external module
@@ -6,7 +7,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo").default;
 const multer = require("multer");
-const DB_PATH = "mongodb+srv://root:ankit00001@cluster0.j4xoep7.mongodb.net/airbnb?retryWrites=true&w=majority&appName=Cluster0";
+// const DB_PATH = "";
 
 //local module
 const storeRouter = require("./routes/storeRouter");
@@ -23,7 +24,7 @@ app.set("view engine", "ejs");
 app.set("views", "views");
 
 const store = MongoStore.create({
-  mongoUrl: DB_PATH,
+  mongoUrl: process.env.MONGODB_URI,
   collectionName: "sessions"
 });
 
@@ -69,7 +70,7 @@ app.use("/host/uploads", express.static(path.join(rootDir, "uploads")));
 app.use("/homes/uploads", express.static(path.join(rootDir, "uploads")));
 
 app.use(session({
-  secret: "hello secret",
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   store
@@ -96,7 +97,7 @@ app.use(errorscontroller.pageNotFound);
 
 const PORT = 3009;
 
-mongoose.connect(DB_PATH).then(() => {
+mongoose.connect(process.env.MONGODB_URI).then(() => {
   console.log("connect to mongo")
   app.listen(PORT, () => {
     console.log(`Server running on address http://localhost:${PORT}`);
